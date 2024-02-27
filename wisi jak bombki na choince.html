@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wisielec</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #DCD6F7;
+        font-family: "Roboto", sans-serif;
+        font-weight: 500;
+    }
+    main{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    #word {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+    #letters {
+        margin-bottom: 20px;
+    }
+    #letters button {
+        font-size: 18px;
+        margin: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+    #result {
+        font-size: 24px;
+        font-weight: bold;
+        display: flex;
+        align-items: baseline;
+    }
+    .uwu{
+        background-color:#4E4C67;
+        border-radius: 15px;
+        color: white;
+    }
+</style>
+</head>
+<body>
+    <main>
+        <div id="word"></div>
+        <div id="letters"></div>
+        <div id="result"><p>Zostało ci <i id="proba">6</i> Prób</p></div>
+        <button id="baton" hidden>Spróbuj ponownie</button>
+        <div id="last"><p>Wykorzystane litery: </p><i id="ostatnie"></i></div>
+            <div id="bombka">
+            <img id="s1" src="img/serce.png">
+            <img id="s2" src="img/serce.png">
+            <img id="s3" src="img/serce.png">
+            <img id="s4" src="img/serce.png">
+            <img id="s5" src="img/serce.png">
+            <img id="s6" src="img/serce.png">
+        </div>
+    </main>
+<script>
+    const words = ["ZUPA","MAMA","TATA","CYBERPUNK","WIEDŹMIN","TOMEK","MLEKO","MONITOR","ODDAJE","WYPŁATA","REKLAMACJA","KONSTANTYNOPOLITYŃCZYKOWIANECZKA","BOBER","BRZĘCZYSZCZYKIEWICZ","ŻÓŁĆ"];
+    let selectedWord = words[Math.floor(Math.random() * words.length)];
+    let guessedLetters = new Set();
+    let wrongLetters = []
+    let remainingAttempts = 6;
+    let ostatnie = document.getElementById("ostatnie");
+    
+    function reset(){
+        const baton = document.getElementById("baton")
+        baton.hidden = false;
+        baton.onclick = function (){
+            window.location.reload();
+        }
+    }
+    function wisielec(){
+        let serce1 = document.getElementById("s1");
+        let serce2 = document.getElementById("s2");
+        let serce3 = document.getElementById("s3");
+        let serce4 = document.getElementById("s4");
+        let serce5 = document.getElementById("s5");
+        let serce6 = document.getElementById("s6");
+        if (remainingAttempts==5) serce6.hidden = true
+        if (remainingAttempts==4) serce5.hidden = true
+        if (remainingAttempts==3) serce4.hidden = true
+        if (remainingAttempts==2) serce3.hidden = true
+        if (remainingAttempts==1) serce2.hidden = true
+        if (remainingAttempts==0) serce1.hidden = true
+        ostatnie.textContent = wrongLetters;
+    }
+    function displayWord() {
+        let wordDisplay = '';
+        for (let char of selectedWord) {
+            if (guessedLetters.has(char.toUpperCase()) || guessedLetters.has(char.toLowerCase())) {
+                wordDisplay += char + ' ';
+            } else {
+                wordDisplay += '_ ';
+            }
+        }
+    document.getElementById('word').textContent = wordDisplay;
+    }
+    function displayLetters() {
+    let letters = '';
+    const polishAlphabet = "AĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUVWXYZŹŻ";
+    for (let char of polishAlphabet) {
+        if (!guessedLetters.has(char.toUpperCase()) && !guessedLetters.has(char.toLowerCase())) {
+            letters += `<button class="uwu" onclick="guess('${char}')">${char}</button>`;
+        }
+    }
+    document.getElementById('letters').innerHTML = letters;
+    }
+    function guess(letter) {
+    guessedLetters.add(letter.toUpperCase());
+    guessedLetters.add(letter.toLowerCase());
+    if (!selectedWord.toUpperCase().includes(letter.toUpperCase())) {
+        wrongLetters.push(letter)
+        remainingAttempts--;
+        document.getElementById("proba").textContent = remainingAttempts;
+        wisielec()
+        
+    }
+    displayWord();
+    displayLetters();
+    checkResult();
+    }
+    function checkResult() {
+        if (remainingAttempts === 0) {
+            document.getElementById('result').textContent = 'Przegrałeś. Szukane słowo to: ' + selectedWord;
+            reset();
+        } 
+        else if (!document.getElementById('word').textContent.includes('_')) {
+            document.getElementById('result').textContent = 'Gratulacje! Wygrałeś!';
+            reset();
+        }
+    }
+    displayWord();
+    displayLetters();
+</script>
+</body>
+</html>
